@@ -1,0 +1,110 @@
+[
+  {
+    "name": "GitHub",
+    "urlPattern": "https://github.com/%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["404", "not found", "page not found"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": "public GitHub profiles"
+  },
+  {
+    "name": "Instagram",
+    "urlPattern": "https://www.instagram.com/%s/",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["page not found", "instagram"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": ""
+  },
+  {
+    "name": "Reddit",
+    "urlPattern": "https://www.reddit.com/user/%s",
+    "checkType": "ELEMENT",
+    "notFoundIndicators": [],
+    "elementSelector": "div[data-testid='profile--id']",
+    "enabled": true,
+    "notes": "Лучше ELEMENT; обнови селектор при изменениях UI"
+  },
+  {
+    "name": "TikTok",
+    "urlPattern": "https://www.tiktok.com/@%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["page not found", "sorry", "can't find"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": "Некоторые профили приватные"
+  },
+  {
+    "name": "YouTube @handle",
+    "urlPattern": "https://www.youtube.com/@%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["not found", "doesn't exist", "404"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": "Альтернативный pattern: https://www.youtube.com/user/%s"
+  },
+  {
+    "name": "YouTube user",
+    "urlPattern": "https://www.youtube.com/user/%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["not found", "doesn't exist", "404"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": ""
+  },
+  {
+    "name": "Twitch",
+    "urlPattern": "https://www.twitch.tv/%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["channel doesn't exist", "404", "not found"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": ""
+  },
+  {
+    "name": "Steam (custom id)",
+    "urlPattern": "https://steamcommunity.com/id/%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["error", "not found", "404"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": "also try /profiles/{numeric-id} if known"
+  },
+  {
+    "name": "SoundCloud",
+    "urlPattern": "https://soundcloud.com/%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["page not found", "404"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": ""
+  },
+  {
+    "name": "Telegram (profile via t.me)",
+    "urlPattern": "https://t.me/%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["tg://user?id=", "not found", "404"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": "works for public usernames"
+  },
+  {
+    "name": "Steam (community profile numeric)",
+    "urlPattern": "https://steamcommunity.com/profiles/%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["profile not found", "404"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": "numeric id needed"
+  },
+  {
+    "name": "SoundCloud (alt)",
+    "urlPattern": "https://soundcloud.com/%s",
+    "checkType": "TITLE",
+    "notFoundIndicators": ["404", "not found"],
+    "elementSelector": "",
+    "enabled": true,
+    "notes": ""
+  }
+]
