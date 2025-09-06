@@ -53,6 +53,7 @@ public class UserService {
         user.setRole(Role.USER);
 
         String token = passwordEncoder.encode(UUID.randomUUID().toString());
+        System.out.println(token);
 
         VerifyToken verifyToken = new VerifyToken();
         verifyToken.setToken(token);

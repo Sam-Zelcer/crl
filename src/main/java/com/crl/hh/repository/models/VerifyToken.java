@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "verify")
+@Table(name = "verifytokens")
 @RequiredArgsConstructor
 public class VerifyToken {
 

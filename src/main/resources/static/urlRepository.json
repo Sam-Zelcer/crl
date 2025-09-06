@@ -2,109 +2,91 @@
   {
     "name": "GitHub",
     "urlPattern": "https://github.com/%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["404", "not found", "page not found"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": "public GitHub profiles"
+    "elementSelector": ".vcard-username",
+    "enabled": true
   },
   {
     "name": "Instagram",
     "urlPattern": "https://www.instagram.com/%s/",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["page not found", "instagram"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": ""
+    "elementSelector": "header section li.-vDIg > span",
+    "enabled": true
   },
   {
     "name": "Reddit",
     "urlPattern": "https://www.reddit.com/user/%s",
-    "checkType": "ELEMENT",
-    "notFoundIndicators": [],
     "elementSelector": "div[data-testid='profile--id']",
-    "enabled": true,
-    "notes": "Лучше ELEMENT; обнови селектор при изменениях UI"
+    "enabled": true
   },
   {
     "name": "TikTok",
     "urlPattern": "https://www.tiktok.com/@%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["page not found", "sorry", "can't find"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": "Некоторые профили приватные"
-  },
-  {
-    "name": "YouTube @handle",
-    "urlPattern": "https://www.youtube.com/@%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["not found", "doesn't exist", "404"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": "Альтернативный pattern: https://www.youtube.com/user/%s"
+    "elementSelector": "h2[data-e2e=\"user-title\"]",
+    "enabled": true
   },
   {
     "name": "YouTube user",
     "urlPattern": "https://www.youtube.com/user/%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["not found", "doesn't exist", "404"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": ""
+    "elementSelector": "#inner-header-container yt-formatted-string",
+    "enabled": true
   },
   {
     "name": "Twitch",
     "urlPattern": "https://www.twitch.tv/%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["channel doesn't exist", "404", "not found"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": ""
+    "elementSelector": "[data-a-target=\"profile-header-name\"]",
+    "enabled": true
   },
   {
     "name": "Steam (custom id)",
     "urlPattern": "https://steamcommunity.com/id/%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["error", "not found", "404"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": "also try /profiles/{numeric-id} if known"
+    "elementSelector": ".actual_persona_name",
+    "enabled": true
   },
   {
     "name": "SoundCloud",
     "urlPattern": "https://soundcloud.com/%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["page not found", "404"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": ""
+    "elementSelector": ".profileHeaderInfo__userName",
+    "enabled": true
   },
   {
     "name": "Telegram (profile via t.me)",
     "urlPattern": "https://t.me/%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["tg://user?id=", "not found", "404"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": "works for public usernames"
+    "elementSelector": ".tgme_page_title",
+    "enabled": true
   },
   {
     "name": "Steam (community profile numeric)",
     "urlPattern": "https://steamcommunity.com/profiles/%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["profile not found", "404"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": "numeric id needed"
+    "elementSelector": ".profile_header_username",
+    "enabled": true
   },
   {
-    "name": "SoundCloud (alt)",
-    "urlPattern": "https://soundcloud.com/%s",
-    "checkType": "TITLE",
-    "notFoundIndicators": ["404", "not found"],
-    "elementSelector": "",
-    "enabled": true,
-    "notes": ""
+    "name": "Twitter / X",
+    "urlPattern": "https://twitter.com/%s",
+    "elementSelector": "div[data-testid=\"UserName\"] span > span",
+    "enabled": true
+  },
+  {
+    "name": "Facebook",
+    "urlPattern": "https://www.facebook.com/%s",
+    "elementSelector": "h1#seo_h1_tag",
+    "enabled": true
+  },
+  {
+    "name": "Twitter (X)",
+    "urlPattern": "https://twitter.com/%s",
+    "elementSelector": "div[data-testid=\"UserName\"] span > span",
+    "enabled": true
+  },
+  {
+    "name": "Snapchat",
+    "urlPattern": "https://www.snapchat.com/add/%s",
+    "elementSelector": "div[data-test-id=\"profile-username\"]",
+    "enabled": true
+  },
+  {
+    "name": "Discord",
+    "urlPattern": "https://discord.com/users/%s",
+    "elementSelector": "span[data-test-id=\"user-username\"]",
+    "enabled": true
   }
 ]
