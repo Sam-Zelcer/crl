@@ -61,10 +61,6 @@ public class JWTService {
         return getAllClaims(token).getSubject();
     }
 
-    public Role extractRole(String token) {
-        return getAllClaims(token).get("role", Role.class);
-    }
-
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
 

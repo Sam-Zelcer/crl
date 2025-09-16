@@ -3,10 +3,9 @@ package com.crl.hh.service.osint;
 import com.crl.hh.repository.NotFoundIndicatorsRepository;
 import com.crl.hh.repository.SiteEntityRepository;
 import com.crl.hh.repository.models.SiteEntity;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -21,11 +20,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.regex.Pattern;
+import java.util.*;
 
 @Service
 public class OSINTService {
@@ -35,6 +30,8 @@ public class OSINTService {
     private final SiteEntityRepository siteEntityRepository;
     private final NotFoundIndicatorsRepository notFoundIndicatorsRepository;
     private final HttpClient httpClient;
+    private WebDriver driver;
+    private WebDriverWait webDriverWait;
 
     public OSINTService(SiteEntityRepository siteEntityRepository, NotFoundIndicatorsRepository notFoundIndicatorsRepository) {
         this.siteEntityRepository = siteEntityRepository;
@@ -43,6 +40,18 @@ public class OSINTService {
                 .connectTimeout(Duration.ofSeconds(5))
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
+    }
+
+    @PostConstruct
+    public void init() {
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--headless=new", "--disable-gpu", "--blink-settings=imagesEnabled=false");
+        chromeOptions.addArguments("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        chromeOptions.addArguments("--remote-allow-origins=*");
+
+        driver = new ChromeDriver(chromeOptions);
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
+        webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
 
     public List<String> searchByUsername(String username) {
@@ -57,81 +66,68 @@ public class OSINTService {
                 .stream()
                 .map(s -> s.toLowerCase(Locale.ROOT).trim())
                 .toList();
-        List<String> found =  new ArrayList<>();
 
-        Pattern usernamePattern = Pattern.compile(
-                "(?<![\\p{L}\\p{Nd}_])" + Pattern.quote(username) + "(?![\\p{L}\\p{Nd}_])",
-                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE
-        );
-
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--headless=new", "--disable-gpu", "--blink-settings=imagesEnabled=false");
-        chromeOptions.addArguments("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-        chromeOptions.addArguments("--remote-allow-origins=*");
-
-        WebDriver driver = null;
+        List<String> found = Collections.synchronizedList(new ArrayList<>());
 
         try {
-            driver = new ChromeDriver(chromeOptions);
-            driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
-
             for (SiteEntity site : sites) {
                 String url = String.format(site.getUrlPattern(), username);
 
 //              STATUS CODE CHECK --
                 Integer statusCode = getStatusCode(url);
-                if (
-                        statusCode != null && (statusCode == 404 || statusCode == 410)
-                ) {
-                    logger.debug("Skipping site {}, HTTP status code {}", url, statusCode);
-                    continue;
-                }
-
-                boolean isElement = false;
-                boolean isTitleHasUsername = false;
-                boolean isBodyHasUsername = false;
+                if (statusCode != null && (statusCode == 404 || statusCode == 410)) continue;
 
                 try {
                     driver.get(url);
 
-//                  TITLE AND BODY CHECK --
-                    String title = Optional.ofNullable(driver.getTitle()).orElse("").toLowerCase(Locale.ROOT);
-                    String body = "";
+//                  URL CHECK
+                    String currentUrl = Optional.ofNullable(driver.getCurrentUrl()).orElse("").toLowerCase(Locale.ROOT);
+                    if (!currentUrl.equals(url.toLowerCase(Locale.ROOT)) && !currentUrl.contains(username.toLowerCase(Locale.ROOT))) continue;
+
+//                  HAS NOT FOUND INDICATORS CHECK
                     try {
-                        body = driver.findElement(By.tagName("body")).getText();
-                    } catch (Exception ignored) {}
+                        if (site.getName().equals("Instagram")) {
+                            System.out.println("FUCKING INSTAGRAM");
+                            webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("span")));
 
-                    String bodyLower = body.toLowerCase(Locale.ROOT);
+                            String instagram = driver.findElement(By.tagName("span")).getText().toLowerCase(Locale.ROOT);
+                            if (notFoundIndicatorsLower.stream().anyMatch(instagram::contains)) continue;
+                        }
 
-                    boolean hasNotFindIndicators = notFoundIndicatorsLower.stream()
-                            .anyMatch(ind -> title.contains(ind) || bodyLower.contains(ind));
+                        if (site.getName().equals("Twitch")) {
+                            System.out.println("FUCKING TWITCH");
+                            webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("p")));
 
-                    if(hasNotFindIndicators) {
-                        logger.debug("Detected not-found indicator for {} (title='{}', bodySnippet='{}')",
-                                url,
-                                title,
-                                bodyLower.length() > 160 ? bodyLower.substring(0, 160) : bodyLower);
-                        continue;
-                    }
+                            String twitch = driver.findElement(By.tagName("body")).getText().toLowerCase(Locale.ROOT);
+                            if (notFoundIndicatorsLower.stream().anyMatch(twitch::contains)) continue;
+                        }
 
-//                  USERNAME CHECK
-                    isTitleHasUsername = usernamePattern.matcher(title).find();
-                    isBodyHasUsername = usernamePattern.matcher(bodyLower).find();
+                        if (site.getName().equals("Twitter (X)")) {
+                            System.out.println("FUCKING X");
+                            webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("span")));
 
-                    if (!isBodyHasUsername) {
-                        try {
-                            String html = Optional.ofNullable(driver.getPageSource()).orElse("").toLowerCase(Locale.ROOT);
-                            isBodyHasUsername = usernamePattern.matcher(html).find();
-                        } catch (Exception ignored) {}
+                            String x = driver.findElement(By.tagName("body")).getText().toLowerCase(Locale.ROOT);
+                            if (x.contains("this account doesn’t exist")) continue;
+                        }
+
+                        webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("div")));
+
+                        String body = driver.findElement(By.tagName("body")).getText().toLowerCase(Locale.ROOT);
+                        if (notFoundIndicatorsLower.stream().anyMatch(body::contains)) continue;
+
+                    } catch (TimeoutException te) {
+                        logger.debug("Element not found within timeout for --. {}", site.getName());
                     }
 
 //                  ELEMENT CHECK
                     String selector = Optional.ofNullable(site.getElementSelector()).orElse("").trim();
                     if(!selector.isBlank()) {
-                        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(15));
                         try {
                             webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)));
-                            isElement = true;
+                            found.add(url);
+                            System.out.println("Account on " + site.getName() + ", with username " + username + ", was found --> " + url);
+                            continue;
+
                         } catch (TimeoutException ignored) {}
                     }
 
@@ -139,26 +135,12 @@ public class OSINTService {
                     logger.debug("Selenium failed for {}: {}", url, wbe.getMessage());
                 }
 
-                System.out.println(url);
-                System.out.println(isElement);
-                System.out.println(isTitleHasUsername);
-                System.out.println(isBodyHasUsername);
-
-                if (
-                        (isElement || (isTitleHasUsername && isBodyHasUsername))
-                ) {
-                    found.add(url);
-                }
+                System.out.println("Account on " + site.getName() + ", with username " + username + ", was found --> " + url);
+                found.add(url);
             }
 
         } catch (WebDriverException e) {
             logger.error("Webdriver failed for {}: {}", username, e.getMessage());
-        } finally {
-            if (driver != null) {
-                try {
-                    driver.quit();
-                } catch (WebDriverException ignored) {}
-            }
         }
 
         return found;
@@ -187,6 +169,15 @@ public class OSINTService {
                 logger.debug("GET failed for {}: {}",  url, ex.getMessage());
                 return null;
             }
+        }
+    }
+
+    @PreDestroy
+    public void cleanup() {
+        if (driver != null) {
+            try {
+                driver.quit();
+            } catch (WebDriverException ignored) {}
         }
     }
 

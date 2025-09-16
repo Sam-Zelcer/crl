@@ -24,8 +24,8 @@
     "enabled": true
   },
   {
-    "name": "YouTube user",
-    "urlPattern": "https://www.youtube.com/user/%s",
+    "name": "YouTube",
+    "urlPattern": "https://www.youtube.com/@%s",
     "elementSelector": "#inner-header-container yt-formatted-string",
     "enabled": true
   },
@@ -36,7 +36,7 @@
     "enabled": true
   },
   {
-    "name": "Steam (custom id)",
+    "name": "Steam",
     "urlPattern": "https://steamcommunity.com/id/%s",
     "elementSelector": ".actual_persona_name",
     "enabled": true
@@ -48,21 +48,9 @@
     "enabled": true
   },
   {
-    "name": "Telegram (profile via t.me)",
+    "name": "Telegram",
     "urlPattern": "https://t.me/%s",
     "elementSelector": ".tgme_page_title",
-    "enabled": true
-  },
-  {
-    "name": "Steam (community profile numeric)",
-    "urlPattern": "https://steamcommunity.com/profiles/%s",
-    "elementSelector": ".profile_header_username",
-    "enabled": true
-  },
-  {
-    "name": "Twitter / X",
-    "urlPattern": "https://twitter.com/%s",
-    "elementSelector": "div[data-testid=\"UserName\"] span > span",
     "enabled": true
   },
   {
@@ -75,18 +63,6 @@
     "name": "Twitter (X)",
     "urlPattern": "https://twitter.com/%s",
     "elementSelector": "div[data-testid=\"UserName\"] span > span",
-    "enabled": true
-  },
-  {
-    "name": "Snapchat",
-    "urlPattern": "https://www.snapchat.com/add/%s",
-    "elementSelector": "div[data-test-id=\"profile-username\"]",
-    "enabled": true
-  },
-  {
-    "name": "Discord",
-    "urlPattern": "https://discord.com/users/%s",
-    "elementSelector": "span[data-test-id=\"user-username\"]",
     "enabled": true
   }
 ]
