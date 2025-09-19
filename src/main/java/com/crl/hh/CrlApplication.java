@@ -10,4 +10,4 @@ public class CrlApplication {
         SpringApplication.run(CrlApplication.class, args);
     }
 
-}
+    }

@@ -60,7 +60,7 @@
     "enabled": true
   },
   {
-    "name": "Twitter (X)",
+    "name": "X",
     "urlPattern": "https://twitter.com/%s",
     "elementSelector": "div[data-testid=\"UserName\"] span > span",
     "enabled": true

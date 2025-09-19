@@ -50,8 +50,8 @@ public class OSINTService {
         chromeOptions.addArguments("--remote-allow-origins=*");
 
         driver = new ChromeDriver(chromeOptions);
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
-        webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
+        webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     public List<String> searchByUsername(String username) {
@@ -84,32 +84,24 @@ public class OSINTService {
                     String currentUrl = Optional.ofNullable(driver.getCurrentUrl()).orElse("").toLowerCase(Locale.ROOT);
                     if (!currentUrl.equals(url.toLowerCase(Locale.ROOT)) && !currentUrl.contains(username.toLowerCase(Locale.ROOT))) continue;
 
-//                  HAS NOT FOUND INDICATORS CHECK
                     try {
+//                      CUSTOM CHECK FOR INSTAGRAM
                         if (site.getName().equals("Instagram")) {
-                            System.out.println("FUCKING INSTAGRAM");
                             webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("span")));
 
                             String instagram = driver.findElement(By.tagName("span")).getText().toLowerCase(Locale.ROOT);
                             if (notFoundIndicatorsLower.stream().anyMatch(instagram::contains)) continue;
                         }
 
+//                      CUSTOM CHECK FOR TWITCH
                         if (site.getName().equals("Twitch")) {
-                            System.out.println("FUCKING TWITCH");
                             webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("p")));
 
                             String twitch = driver.findElement(By.tagName("body")).getText().toLowerCase(Locale.ROOT);
-                            if (notFoundIndicatorsLower.stream().anyMatch(twitch::contains)) continue;
+                            if (!twitch.contains(username.toLowerCase(Locale.ROOT))) continue;
                         }
 
-                        if (site.getName().equals("Twitter (X)")) {
-                            System.out.println("FUCKING X");
-                            webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("span")));
-
-                            String x = driver.findElement(By.tagName("body")).getText().toLowerCase(Locale.ROOT);
-                            if (x.contains("this account doesn’t exist")) continue;
-                        }
-
+//                      HAS NOT FOUND INDICATORS CHECK
                         webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("div")));
 
                         String body = driver.findElement(By.tagName("body")).getText().toLowerCase(Locale.ROOT);
@@ -124,9 +116,12 @@ public class OSINTService {
                     if(!selector.isBlank()) {
                         try {
                             webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(selector)));
-                            found.add(url);
-                            System.out.println("Account on " + site.getName() + ", with username " + username + ", was found --> " + url);
-                            continue;
+                            WebElement element = driver.findElement(By.cssSelector(selector));
+                            if (element.isEnabled()) {
+                                found.add(url);
+                                System.out.println("Account on " + site.getName() + ", with username " + username + ", was found --> " + url);
+                                continue;
+                            }
 
                         } catch (TimeoutException ignored) {}
                     }
@@ -135,6 +130,7 @@ public class OSINTService {
                     logger.debug("Selenium failed for {}: {}", url, wbe.getMessage());
                 }
 
+                if (site.getName().equals("X")) continue;
                 System.out.println("Account on " + site.getName() + ", with username " + username + ", was found --> " + url);
                 found.add(url);
             }
